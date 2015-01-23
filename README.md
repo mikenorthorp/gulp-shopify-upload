@@ -30,7 +30,7 @@ shopifyTheme/
 |-- templates/
 ```
 
-### Example Gulpfile
+**Example Gulpfile**
 ```
 // Gulp plugin setup
 var gulp = require('gulp');
