@@ -60,7 +60,7 @@ gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID')
 5. Run `gulp` and edit one of your theme files, it should automatically be uploaded to Shopify
 
 
-
+*Created by [Able Sense Media](http://ablesense.com) - 2015*
 
 
 
