@@ -6,7 +6,7 @@ gulp-shopify-upload
 **gulp-shopify-upload** is a [Gulpjs](https://github.com/gulpjs/gulp) plugin used to watch and upload theme files to Shopify.
 By using this plugin you can watch all of the different folders in a Shopify theme and have them automatically sync to your Shopify store on save. This is more lightweight than using Shopifys inline theme editor or desktop theme editor, and works on Windows, Mac and Linux.
 
-This is a port of a similar plugin using Grunt called [grunt-shopify](https://github.com/wilr/grunt-shopify), thank you to the author for making a 
+This is a port of a similar plugin using Grunt called [grunt-shopify](https://github.com/wilr/grunt-shopify), thank you to the author for making a great plugin for Shopify.
 ## Features
 
 - Uploads any file changes to Shopify on save in the folders:  `assets, layout, config, snippets, templates, locales`
