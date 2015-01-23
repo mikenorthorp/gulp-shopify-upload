@@ -118,9 +118,9 @@ shopify.upload = function(filepath, file, apiKey, password, host, base, themeid)
 
     function onUpdate(err, resp) {
         if (err && err.type === 'ShopifyInvalidRequestError') {
-            console.log('Error invalid upload request!');
+            console.log('Error invalid upload request!' filepath + ' not uploaded!');
         } else if (!err) {
-            console.log('Upload completed of file: ' + filepath);
+            console.log('Upload completed of file: ' + filepath + ' to ' + host);
         } else {
           console.log('Error undefined! ' + err.type);
         }
