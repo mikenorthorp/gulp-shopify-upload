@@ -1,6 +1,6 @@
 {
   "name": "gulp-shopify-upload",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tool to watch and upload files to Shopify for use in theme editing with",
   "keywords": [
     "gulp",
@@ -17,11 +17,13 @@
     "name": "Able Sense Media",
     "url": "http://ablesense.com"
   },
-  "contributors": [{
-    "name": "Mike Northorp",
-    "email": "mike.northorp@gmail.com",
-    "url": "https://github.com/mikenorthorp"
-  }],
+  "contributors": [
+    {
+      "name": "Mike Northorp",
+      "email": "mike.northorp@gmail.com",
+      "url": "https://github.com/mikenorthorp"
+    }
+  ],
   "main": "index.js",
   "repository": {
     "type": "git",
