@@ -1,0 +1,54 @@
+{
+  "name": "gulp-shopify-upload",
+  "version": "1.0.0",
+  "description": "gulp plugin to watch and upload files to Shopify for use in theme editing",
+  "keywords": [
+    "gulp",
+    "shopify",
+    "shopify-upload",
+    "shopify-theme"
+  ],
+  "homepage": "https://github.com/mikenorthorp/gulp-shopify-upload",
+  "bugs": {
+    "url": "https://github.com/mikenorthorp/gulp-shopify-upload/issues"
+  },
+  "author": {
+    "name": "Mike Northorp",
+    "email": "mike.northorp@gmail.com",
+    "url": "https://github.com/mikenorthorp"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikenorthorp/gulp-shopify-upload.git"
+  },
+  "dependencies": {
+    "async": "~0.2.9",
+    "gulp-watch": "^4.1.0",
+    "isbinaryfile": "~2.0.0",
+    "path": "^0.11.14",
+    "pwuid": "^1.0.1",
+    "shopify-api": "~0.2.2",
+    "through2": "^0.6.3",
+    "gulp-util": "^3.0.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.10"
+  },
+  "engines": {
+    "node": ">=0.8.0",
+    "npm": ">=1.2.10"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "maintainers": [
+    {
+      "name": "mikenorthorp",
+      "email": "mike.northorp@gmail.com"
+    }
+  ],
+  "scripts": {}
+}
