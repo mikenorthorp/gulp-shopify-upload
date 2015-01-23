@@ -135,7 +135,7 @@ shopify.upload = function(filepath, file, apiKey, password, host, base, themeid)
 
 
 // plugin level function (dealing with files)
-function gulpShopifyUpload(apiKey, password, host, base, themeid) {
+function gulpShopifyUpload(apiKey, password, host, themeid) {
 
   if(typeof apiKey === 'undefined'){
     throw new PluginError(PLUGIN_NAME, 'Error, API Key for shopify does not exist!');
@@ -146,9 +146,6 @@ function gulpShopifyUpload(apiKey, password, host, base, themeid) {
   if(typeof host === 'undefined'){
     throw new PluginError(PLUGIN_NAME, 'Error, host for shopify does not exist!');
   };
-  if(typeof base === 'undefined'){
-    throw new PluginError(PLUGIN_NAME, 'Error, base for shopify does not exist!');
-  };
 
   // creating a stream through which each file will pass
   var stream = through.obj(function(file, enc, cb) {
@@ -158,7 +155,7 @@ function gulpShopifyUpload(apiKey, password, host, base, themeid) {
     }
 
     if (file.isBuffer()) {
-      shopify.upload(file.path, file, apiKey, password, host, base, themeid);
+      shopify.upload(file.path, file, apiKey, password, host, '', themeid);
     }
 
     // make sure the file goes through the next gulp plugin

@@ -1,22 +1,27 @@
 {
   "name": "gulp-shopify-upload",
   "version": "1.0.0",
-  "description": "gulp plugin to watch and upload files to Shopify for use in theme editing",
+  "description": "A tool to watch and upload files to Shopify for use in theme editing with",
   "keywords": [
     "gulp",
     "shopify",
     "shopify-upload",
-    "shopify-theme"
+    "shopify-theme",
+    "ablesense"
   ],
   "homepage": "https://github.com/mikenorthorp/gulp-shopify-upload",
   "bugs": {
     "url": "https://github.com/mikenorthorp/gulp-shopify-upload/issues"
   },
   "author": {
+    "name": "Able Sense Media",
+    "url": "http://ablesense.com"
+  },
+  "contributors": [{
     "name": "Mike Northorp",
     "email": "mike.northorp@gmail.com",
     "url": "https://github.com/mikenorthorp"
-  },
+  }],
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -24,7 +29,6 @@
   },
   "dependencies": {
     "async": "~0.2.9",
-    "gulp-watch": "^4.1.0",
     "isbinaryfile": "~2.0.0",
     "path": "^0.11.14",
     "pwuid": "^1.0.1",
