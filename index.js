@@ -11,6 +11,9 @@ var shopify = {};
 shopify._api = false;
 shopify._basePath = false;
 
+// Store the connection here
+var shopifyAPI;
+
 // consts
 const PLUGIN_NAME = 'gulp-shopify-upload';
 
@@ -95,9 +98,9 @@ shopify._makePathRelative = function(filepath, base) {
  * @param {string} filepath
  * @param {Function} done
  */
-shopify.upload = function(filepath, file, apiKey, password, host, base, themeid) {
+shopify.upload = function(filepath, file, host, base, themeid) {
 
-    var api = shopify._getApi(apiKey, password, host),
+    var api = shopifyAPI,
         themeId = themeid,
         key = shopify._makeAssetKey(filepath, base),
         isBinary = isBinaryFile(filepath),
@@ -137,6 +140,9 @@ shopify.upload = function(filepath, file, apiKey, password, host, base, themeid)
 // plugin level function (dealing with files)
 function gulpShopifyUpload(apiKey, password, host, themeid) {
 
+  // Set up the API
+  shopifyAPI = shopify._getApi(apiKey, password, host);
+
   if(typeof apiKey === 'undefined'){
     throw new PluginError(PLUGIN_NAME, 'Error, API Key for shopify does not exist!');
   };
@@ -155,7 +161,7 @@ function gulpShopifyUpload(apiKey, password, host, themeid) {
     }
 
     if (file.isBuffer()) {
-      shopify.upload(file.path, file, apiKey, password, host, '', themeid);
+      shopify.upload(file.path, file, host, '', themeid);
     }
 
     // make sure the file goes through the next gulp plugin
