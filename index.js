@@ -121,9 +121,10 @@ shopify.upload = function(filepath, file, host, base, themeid) {
 
     function onUpdate(err, resp) {
         if (err && err.type === 'ShopifyInvalidRequestError') {
-            console.log('Error invalid upload request! ' + filepath + ' not uploaded!');
+            console.log('Error invalid upload request! ' + filepath + ' not uploaded to ' + host);
         } else if (!err) {
-            console.log('Upload completed of file: ' + filepath + ' to ' + host);
+            var filename = filepath.replace(/^.*[\\\/]/, '');
+            console.log('Upload Complete: ' + filename);
         } else {
           console.log('Error undefined! ' + err.type);
         }
@@ -142,6 +143,7 @@ function gulpShopifyUpload(apiKey, password, host, themeid) {
 
   // Set up the API
   shopifyAPI = shopify._getApi(apiKey, password, host);
+  console.log('Ready to upload too ' + host);
 
   if(typeof apiKey === 'undefined'){
     throw new PluginError(PLUGIN_NAME, 'Error, API Key for shopify does not exist!');
