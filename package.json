@@ -33,13 +33,14 @@
     "async": "0.2.9",
     "isbinaryfile": "2.0.0",
     "path": "0.11.14",
-    "pwuid": "1.0.1",
+    "pwuid": "1.0.2",
     "shopify-api": "0.2.2",
     "through2": "0.6.3",
-    "gulp-util": "3.0.2"
+    "gulp-util": "3.0.2",
+    "colors": "1.0.3",
+    "node-notifier": "4.1.2"
   },
   "devDependencies": {
-    "gulp": "3.8.10"
   },
   "engines": {
     "node": ">=0.8.0",

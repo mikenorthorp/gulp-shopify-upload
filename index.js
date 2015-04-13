@@ -1,4 +1,12 @@
 var through = require('through2');
+//var notifier = require('node-notifier');
+var Notification = require('node-notifier').NotificationCenter;
+var notifier = new Notification({
+  withFallback: false, // use Growl if <= 10.8?
+  customPath: void 0 // Relative path if you want to use your fork of terminal-notifier
+});
+
+var colors = require('colors');
 var gutil = require('gulp-util');
 var path = require('path');
 var async = require('async');
@@ -121,12 +129,37 @@ shopify.upload = function(filepath, file, host, base, themeid) {
 
     function onUpdate(err, resp) {
         if (err && err.type === 'ShopifyInvalidRequestError') {
-            console.log('Error invalid upload request! ' + filepath + ' not uploaded to ' + host);
+            //console.log('ERROR: "' + err.detail.asset[0].split('\n')[0] + '" in ' + key);
+            var errMsg = err.detail.asset[0].split('\n')[0].cyan + '" in ' + key;
+            console.log('ERROR: "' + errMsg);
+            //through.obj(function (file, enc, cb) {
+              //this.emit('error', new PluginError(PLUGIN_NAME, errMsg));
+              //return cb();
+            //});
+            notifier.notify({
+              title:    "Upload Failed",
+              //subtitle: "Upload failed",
+              message:  err.detail.asset[0],
+              sound:    "Sosumi"
+            });
+            //throw new Error(errMsg);
         } else if (!err) {
             var filename = filepath.replace(/^.*[\\\/]/, '');
             console.log('Upload Complete: ' + filename);
+            notifier.notify({
+              title:    "Upload Complete",
+              //subtitle: "Upload complete: ",
+              message: key,
+              sound:    "Pop"
+            });
         } else {
           console.log('Error undefined! ' + err.type);
+            notifier.notify({
+              title:    "Gulp Shopify Upload",
+              subtitle: "Unknown Error",
+              message:  err,
+              sound:    "Blow"
+            });
         }
     }
 
