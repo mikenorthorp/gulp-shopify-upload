@@ -172,7 +172,7 @@ function gulpShopifyUpload(apiKey, password, host, themeid) {
 
   // Set up the API
   shopifyAPI = shopify._getApi(apiKey, password, host);
-  console.log('Ready to upload too ' + host);
+  console.log('Ready to upload to ' + host.cyan);
 
   if(typeof apiKey === 'undefined'){
     throw new PluginError(PLUGIN_NAME, 'Error, API Key for shopify does not exist!');
