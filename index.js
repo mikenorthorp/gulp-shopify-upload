@@ -146,7 +146,6 @@ shopify.upload = function(filepath, file, host, base, themeid) {
               icon: __dirname + '/shopify-logo.png',
               sound:    "Pop"
             });
-            console.log(notifier);
         } else {
           console.log('Error undefined! ' + err.type);
             notifier.notify({
