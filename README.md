@@ -19,45 +19,49 @@ This is a port of a similar plugin using Grunt called [grunt-shopify](https://gi
 1. Download whatever theme you are working on from Shopify to a local directory
 2. Create a [private app](http://docs.shopify.com/api/authentication/creating-a-private-app) in Shopify and get the API Key and Password for it.
 3. Your folder structure and gulpfile.js should have look something like below
-```
-shopifyTheme/
-|-- gulpfile.js
-|-- assets/
-|-- config/
-|-- layout/
-|-- locales/
-|-- snippets/
-|-- templates/
-```
 
-**Example Gulpfile**
-```
-// Gulp plugin setup
-var gulp = require('gulp');
-// Watches single files
-var watch = require('gulp-watch');
-var gulpShopify = require('gulp-shopify-upload');
+	```
+	shopifyTheme/
+	|-- gulpfile.js
+	|-- assets/
+	|-- config/
+	|-- layout/
+	|-- locales/
+	|-- snippets/
+	|-- templates/
+	```
 
-// Setup Shopify Theme and Private App credential
-var shopify_key = 'API KEY';
-var shopify_pass = 'PASSWORD';
-var shopify_name = 'MYSITE';
-var shopify_themeid = 'THEME ID';
+	**Example Gulpfile**
 
-gulp.task('shopifywatch', function() {
-	return watch('./+(assets|layout|config|snippets|templates|locales)/**')
-  .pipe(gulpShopify(shopify_key, shopify_pass, shopify_name + '.myshopify.com', shopify_themeid))
-});
+	```
+	// Gulp plugin setup
+	var gulp = require('gulp');
+	// Watches single files
+	var watch = require('gulp-watch');
+	var gulpShopify = require('gulp-shopify-upload');
 
-// Default gulp action when gulp is run
-gulp.task('default', [
-        'shopifywatch'
-]);
-```
+	// Setup Shopify Theme and Private App credential
+	var shopify_key = 'API KEY';
+	var shopify_pass = 'PASSWORD';
+	var shopify_name = 'MYSITE';
+	var shopify_themeid = 'THEME ID';
+
+	gulp.task('shopifywatch', function() {
+		return watch('./+(assets|layout|config|snippets|templates|locales)/**')
+	  .pipe(gulpShopify(shopify_key, shopify_pass, shopify_name + '.myshopify.com', shopify_themeid))
+	});
+
+	// Default gulp action when gulp is run
+	gulp.task('default', [
+	        'shopifywatch'
+	]);
+	```
+
 4. The basic function call looks like 
-```
-gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID')
-```
+
+	```
+	gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID')
+	```
 
 	- `API KEY` is the API Key generated when creating a private app in Shopify
 	- `PASSWORD` is the Password generated when creating a private app in Shopify
@@ -69,16 +73,5 @@ gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID')
 
 
 *Created by [Able Sense Media](http://ablesense.com) - 2015*
+
 *Modified by [Chris Wu](http://github.com/amouro)*
-
-
-
-
-
-
-
-
-
-
-
-
