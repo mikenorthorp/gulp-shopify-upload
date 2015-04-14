@@ -36,7 +36,7 @@ shopify._getApi = function(apiKey, password, host) {
           auth: apiKey + ':' + password,
           host: host,
           port: '443',
-          timeout: '120000ms'
+          timeout: 120000
       };
 
       shopify._api = new ShopifyApi(opts);
