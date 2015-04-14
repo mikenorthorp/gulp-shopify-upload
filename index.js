@@ -5,6 +5,7 @@ var notifier = new Notification({
   withFallback: false, // use Growl if <= 10.8?
   customPath: void 0 // Relative path if you want to use your fork of terminal-notifier
 });
+console.log(notifier);
 
 var colors = require('colors');
 var gutil = require('gulp-util');
@@ -129,35 +130,31 @@ shopify.upload = function(filepath, file, host, base, themeid) {
 
     function onUpdate(err, resp) {
         if (err && err.type === 'ShopifyInvalidRequestError') {
-            //console.log('ERROR: "' + err.detail.asset[0].split('\n')[0] + '" in ' + key);
             var errMsg = err.detail.asset[0].split('\n')[0].cyan + '" in ' + key;
             console.log('ERROR: "' + errMsg);
-            //through.obj(function (file, enc, cb) {
-              //this.emit('error', new PluginError(PLUGIN_NAME, errMsg));
-              //return cb();
-            //});
             notifier.notify({
               title:    "Upload Failed",
-              //subtitle: "Upload failed",
               message:  err.detail.asset[0],
+              icon: __dirname + '/shopify-logo.png',
               sound:    "Sosumi"
             });
-            //throw new Error(errMsg);
         } else if (!err) {
             var filename = filepath.replace(/^.*[\\\/]/, '');
             console.log('Upload Complete: ' + filename);
             notifier.notify({
               title:    "Upload Complete",
-              //subtitle: "Upload complete: ",
               message: key,
+              icon: __dirname + '/shopify-logo.png',
               sound:    "Pop"
             });
+            console.log(notifier);
         } else {
           console.log('Error undefined! ' + err.type);
             notifier.notify({
               title:    "Gulp Shopify Upload",
               subtitle: "Unknown Error",
               message:  err,
+              icon: __dirname + '/shopify-logo.png',
               sound:    "Blow"
             });
         }
