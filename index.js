@@ -5,7 +5,6 @@ var notifier = new Notification({
   withFallback: false, // use Growl if <= 10.8?
   customPath: void 0 // Relative path if you want to use your fork of terminal-notifier
 });
-console.log(notifier);
 
 var colors = require('colors');
 var gutil = require('gulp-util');
