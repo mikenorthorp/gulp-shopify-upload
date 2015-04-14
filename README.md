@@ -57,6 +57,7 @@ gulp.task('default', [
 4. The basic function call looks like 
 ```
 gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID')
+```
 
 	- `API KEY` is the API Key generated when creating a private app in Shopify
 	- `PASSWORD` is the Password generated when creating a private app in Shopify
