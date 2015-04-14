@@ -38,9 +38,15 @@ var gulp = require('gulp');
 var watch = require('gulp-watch');
 var gulpShopify = require('gulp-shopify-upload');
 
+// Setup Shopify Theme and Private App credential
+var shopify_key = 'API KEY';
+var shopify_pass = 'PASSWORD';
+var shopify_name = 'MYSITE';
+var shopify_themeid = 'THEME ID';
+
 gulp.task('shopifywatch', function() {
 	return watch('./+(assets|layout|config|snippets|templates|locales)/**')
-	.pipe(gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID'));
+  .pipe(gulpShopify(shopify_key, shopify_pass, shopify_name + '.myshopify.com', shopify_themeid))
 });
 
 // Default gulp action when gulp is run
@@ -51,16 +57,18 @@ gulp.task('default', [
 4. The basic function call looks like 
 ```
 gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID')
-```
+
 	- `API KEY` is the API Key generated when creating a private app in Shopify
 	- `PASSWORD` is the Password generated when creating a private app in Shopify
 	- `MYSITE.myshopify.com` is the URL of your shop
 	- `THEME ID` is the ID of your theme and is **OPTIONAL**, if not passed in, the current working theme will be used
+
 4. Run `npm install gulp`, `npm install gulp-watch` and `npm install gulp-shopify-upload`
 5. Run `gulp` and edit one of your theme files, it should automatically be uploaded to Shopify
 
 
 *Created by [Able Sense Media](http://ablesense.com) - 2015*
+*Modified by [Chris Wu](http://github.com/amouro)*
 
 
 
