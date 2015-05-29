@@ -70,6 +70,16 @@ shopify._getBasePath = function(filebase) {
 };
 
 /**
+ * Sets the base path
+ *
+ * @param {string} basePath
+ * @return {void}
+ */
+shopify._setBasePath = function(basePath) {
+  shopify._basePath = basePath;
+};
+
+/**
 * Make a path relative to base path.
 *
 * @param {string} filepath
@@ -81,6 +91,22 @@ shopify._makePathRelative = function(filepath, base) {
   filepath = path.relative(basePath, filepath);
 
   return filepath.replace(/\\/g, '/');
+};
+
+/**
+ * Applies options to plugin
+ *
+ * @param {object} options
+ * @return {void}
+ */
+shopify._setOptions = function(options) {
+  if(!options){
+    return;
+  }
+
+  if(options.hasOwnProperty("basePath")){
+    shopify._setBasePath(options.basePath);
+  }
 };
 
 /*
@@ -139,10 +165,12 @@ shopify.upload = function(filepath, file, host, base, themeid) {
 
 
 // plugin level function (dealing with files)
-function gulpShopifyUpload(apiKey, password, host, themeid) {
+function gulpShopifyUpload(apiKey, password, host, themeid, options) {
 
   // Set up the API
+  shopify._setOptions(options);
   shopifyAPI = shopify._getApi(apiKey, password, host);
+
   console.log('Ready to upload too ' + host);
 
   if(typeof apiKey === 'undefined'){
