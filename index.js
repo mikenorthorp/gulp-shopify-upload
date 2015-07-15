@@ -149,13 +149,13 @@ shopify.upload = function(filepath, file, host, base, themeid) {
 
     function onUpdate(err, resp) {
         if (err && err.type === 'ShopifyInvalidRequestError') {
-            console.log('Error invalid upload request! ' + filepath + ' not uploaded to ' + host);
+            gutil.log(gutil.colors.red('Error invalid upload request! ' + filepath + ' not uploaded to ' + host));
         } else if (!err) {
             var filename = filepath.replace(/^.*[\\\/]/, '');
             gutil.log(gutil.colors.green('Upload Complete: ' + filename));
             shopify.oFileUploaded();
         } else {
-          console.log('Error undefined! ' + err.type);
+          gutil.log(gutil.colors.red('Error undefined! ' + err.type));
         }
     }
 
