@@ -107,6 +107,8 @@ shopify._setOptions = function(options) {
   if(options.hasOwnProperty("basePath")){
     shopify._setBasePath(options.basePath);
   }
+
+  shopify.oFileUploaded = (options.hasOwnProperty("oFileUploaded") && options.oFileUploaded) || (function () {return undefined; })
 };
 
 /*
@@ -147,12 +149,13 @@ shopify.upload = function(filepath, file, host, base, themeid) {
 
     function onUpdate(err, resp) {
         if (err && err.type === 'ShopifyInvalidRequestError') {
-            console.log('Error invalid upload request! ' + filepath + ' not uploaded to ' + host);
+            gutil.log(gutil.colors.red('Error invalid upload request! ' + filepath + ' not uploaded to ' + host));
         } else if (!err) {
             var filename = filepath.replace(/^.*[\\\/]/, '');
-            console.log('Upload Complete: ' + filename);
+            gutil.log(gutil.colors.green('Upload Complete: ' + filename));
+            shopify.oFileUploaded();
         } else {
-          console.log('Error undefined! ' + err.type);
+          gutil.log(gutil.colors.red('Error undefined! ' + err.type));
         }
     }
 
@@ -171,7 +174,7 @@ function gulpShopifyUpload(apiKey, password, host, themeid, options) {
   shopify._setOptions(options);
   shopifyAPI = shopify._getApi(apiKey, password, host);
 
-  console.log('Ready to upload too ' + host);
+  gutil.log('Ready to upload to ' + gutil.colors.magenta(host));
 
   if(typeof apiKey === 'undefined'){
     throw new PluginError(PLUGIN_NAME, 'Error, API Key for shopify does not exist!');
