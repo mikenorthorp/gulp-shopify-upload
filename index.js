@@ -109,35 +109,6 @@ shopify._setOptions = function (options) {
   };
 };
 
-//
-
-/*
- * Process deployment queue for new files added via the stream.
- * The queue is processed based on Shopify's leaky bucket algorithm that allows
- * for infrequent bursts calls with a bucket size of 40. This regenerates overtime,
- * but offers an unlimited leak rate of 2 calls per second. Use this variable to
- * keep track of api call rate to calculate deployment.
- * https://docs.shopify.com/api/introduction/api-call-limit
- *
- * @param {fileQueue} array - list of files to deploy to Shopify
- * @param {host} string - hostname provided from gulp file
- * @param {themeid} string - unique id upload to the Shopify theme
- */
-shopify.deploy = function (fileQueue, host, themeid) {
-  var apiBurstBucketSize = 40,
-    i = 0;
-  for (; i < fileQueue.length; i++) {
-    // deploy immediately if within the burst bucket size, otherwise queue
-    if (i <= apiBurstBucketSize) {
-      shopify.upload(fileQueue[i].path, fileQueue[i], host, '', themeid);
-    } else {
-      // Delay deployment based on position in the array to deploy 2 files per second
-      // after hitting the initial burst bucket limit size
-      setTimeout(shopify.upload.bind(null, fileQueue[i].path, fileQueue[i], host, '', themeid), ((i - apiBurstBucketSize) / 2) * 1000);
-    }
-  }
-};
-
 /*
  * Upload a given file path to Shopify
  *
@@ -193,11 +164,25 @@ shopify.upload = function (filepath, file, host, base, themeid) {
   }
 };
 
-// plugin level function (dealing with files)
+/*
+ * Public function for process deployment queue for new files added via the stream.
+ * The queue is processed based on Shopify's leaky bucket algorithm that allows
+ * for infrequent bursts calls with a bucket size of 40. This regenerates overtime,
+ * but offers an unlimited leak rate of 2 calls per second. Use this variable to
+ * keep track of api call rate to calculate deployment.
+ * https://docs.shopify.com/api/introduction/api-call-limit
+ *
+ * @param {apiKey} string - Shopify developer api key
+ * @param {password} string - Shopify developer api key password
+ * @param {host} string - hostname provided from gulp file
+ * @param {themeid} string - unique id upload to the Shopify theme
+ * @param {options} object - named array of custom overrides.
+ */
 function gulpShopifyUpload(apiKey, password, host, themeid, options) {
 
   // queue files provided in the stream for deployment
-  var fileQueue = [],
+  var apiBurstBucketSize = 40,
+    uploadedFileCount = 0,
     stream;
 
   // Set up the API
@@ -218,24 +203,29 @@ function gulpShopifyUpload(apiKey, password, host, themeid, options) {
 
   // creating a stream through which each file will pass
   stream = through.obj(function (file, enc, cb) {
-      if (file.isStream()) {
-        this.emit('error', new PluginError(PLUGIN_NAME, 'Streams are not supported!'));
-        return cb();
+    if (file.isStream()) {
+      this.emit('error', new PluginError(PLUGIN_NAME, 'Streams are not supported!'));
+      return cb();
+    }
+
+    if (file.isBuffer()) {
+      // deploy immediately if within the burst bucket size, otherwise queue
+      if (uploadedFileCount <= apiBurstBucketSize) {
+        shopify.upload(file.path, file, host, '', themeid);
+      } else {
+        // Delay deployment based on position in the array to deploy 2 files per second
+        // after hitting the initial burst bucket limit size
+        setTimeout(shopify.upload.bind(null, file.path, file, host, '', themeid), ((uploadedFileCount - apiBurstBucketSize) / 2) * 1000);
       }
+      uploadedFileCount++;
+    }
 
-      if (file.isBuffer()) {
-        fileQueue.push(file);
-      }
+    // make sure the file goes through the next gulp plugin
+    this.push(file);
 
-      // make sure the file goes through the next gulp plugin
-      this.push(file);
-
-      // tell the stream engine that we are done with this file
-      cb();
-    })
-    .on('end', function () {
-      shopify.deploy(fileQueue, host, themeid);
-    });
+    // tell the stream engine that we are done with this file
+    cb();
+  });
 
   // returning the file stream
   return stream;
