@@ -107,8 +107,6 @@ shopify._setOptions = function(options) {
   if(options.hasOwnProperty("basePath")){
     shopify._setBasePath(options.basePath);
   }
-
-  shopify.oFileUploaded = (options.hasOwnProperty("oFileUploaded") && options.oFileUploaded) || (function () {return undefined; })
 };
 
 /*
@@ -153,7 +151,6 @@ shopify.upload = function(filepath, file, host, base, themeid) {
         } else if (!err) {
             var filename = filepath.replace(/^.*[\\\/]/, '');
             gutil.log(gutil.colors.green('Upload Complete: ' + filename));
-            shopify.oFileUploaded();
         } else {
           gutil.log(gutil.colors.red('Error undefined! ' + err.type));
         }
