@@ -103,10 +103,6 @@ shopify._setOptions = function (options) {
   if (options.hasOwnProperty('basePath')) {
     shopify._setBasePath(options.basePath);
   }
-
-  shopify.oFileUploaded = (options.hasOwnProperty('oFileUploaded') && options.oFileUploaded) || function () {
-    return undefined;
-  };
 };
 
 /*
@@ -124,26 +120,37 @@ shopify._setOptions = function (options) {
  * @param {string} filepath
  * @param {Function} done
  */
-shopify.upload = function (filepath, file, host, base, themeid) {
+shopify.upload = function(filepath, file, host, base, themeid) {
 
-  var api = shopifyAPI,
-    themeId = themeid,
-    key = shopify._makeAssetKey(filepath, base),
-    isBinary = isBinaryFile(filepath),
-    props = {
-      asset: {
-        key: key
-      }
-    },
-    contents;
+    var api = shopifyAPI,
+        themeId = themeid,
+        key = shopify._makeAssetKey(filepath, base),
+        isBinary = isBinaryFile(filepath),
+        props = {
+            asset: {
+                key: key
+            }
+        },
+        contents;
 
-  contents = file.contents;
+    contents = file.contents;
 
-  if (isBinary) {
-    props.asset.attachment = contents.toString('base64');
-  } else {
-    props.asset.value = contents.toString();
-  }
+    if (isBinary) {
+        props.asset.attachment = contents.toString('base64');
+    } else {
+        props.asset.value = contents.toString();
+    }
+
+    function onUpdate(err, resp) {
+        if (err && err.type === 'ShopifyInvalidRequestError') {
+            gutil.log(gutil.colors.red('Error invalid upload request! ' + filepath + ' not uploaded to ' + host));
+        } else if (!err) {
+            var filename = filepath.replace(/^.*[\\\/]/, '');
+            gutil.log(gutil.colors.green('Upload Complete: ' + filename));
+        } else {
+          gutil.log(gutil.colors.red('Error undefined! ' + err.type));
+        }
+    }
 
   function onUpdate(err) {
     if (err && err.type === 'ShopifyInvalidRequestError') {

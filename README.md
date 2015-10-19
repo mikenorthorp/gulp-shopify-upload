@@ -41,7 +41,7 @@ var gulpShopify = require('gulp-shopify-upload');
 
 gulp.task('shopifywatch', function() {
   return watch('./+(assets|layout|config|snippets|templates|locales)/**')
-    .pipe(gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID'));
+.pipe(gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID'));
 });
 
 // Default gulp action when gulp is run
