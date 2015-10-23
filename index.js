@@ -124,7 +124,7 @@ shopify._setOptions = function(options) {
  * @param {string} filepath
  * @param {Function} done
  */
-shopify.upload = function(filepath, file, host, base, themeid) {
+shopify.upload = function(filepath, file, host, base, themeid, cb) {
 
     var api = shopifyAPI,
         themeId = themeid,
@@ -148,26 +148,34 @@ shopify.upload = function(filepath, file, host, base, themeid) {
     function onUpdate(err, resp) {
         if (err && err.type === 'ShopifyInvalidRequestError') {
             gutil.log(gutil.colors.red('Error invalid upload request! ' + filepath + ' not uploaded to ' + host));
+            cb();
         } else if (!err) {
             var filename = filepath.replace(/^.*[\\\/]/, '');
             gutil.log(gutil.colors.green('Upload Complete: ' + filename));
+            cb();
         } else {
-          gutil.log(gutil.colors.red('Error undefined! ' + err.type));
+          gutil.log(gutil.colors.red('Error undefined! ' + err.type + ' / ' + resp));
+          setTimeout(upload, 5000);
         }
     }
 
-    if (themeId) {
-      api.asset.update(themeId, props, onUpdate);
-    } else {
-      api.assetLegacy.update(props, onUpdate);
+    function upload() {
+      gutil.log(gutil.colors.blue('Trying to upload: ' + filepath));
+      if (themeId) {
+        api.asset.update(themeId, props, onUpdate);
+      } else {
+        api.assetLegacy.update(props, onUpdate);
+      }
     }
+
+    upload();
 };
 
 /*
  * Destroy a given file path to Shopify
  */
 
-shopify.destroy = function(filepath, file, host, base, themeid) {
+shopify.destroy = function(filepath, file, host, base, themeid, cb) {
 
     var api = shopifyAPI,
         themeId = themeid,
@@ -176,20 +184,29 @@ shopify.destroy = function(filepath, file, host, base, themeid) {
     function onDestroy(err, resp) {
         if (err && err.type === 'ShopifyInvalidRequestError') {
             gutil.log(gutil.colors.red('Error invalid destroy request! ' + filepath + ' not destroyed to ' + host));
+            cb();
         } else if (!err) {
             var filename = filepath.replace(/^.*[\\\/]/, '');
             gutil.log(gutil.colors.green('destroy Complete: ' + filename));
+            cb();
         } else {
           gutil.log(gutil.colors.red('Error undefined! ' + err.type));
+          setTimeout(destroy, 5000);
         }
     }
 
-    if (themeId) {
-      api.asset.destroy(themeId, key, onDestroy);
-    } else {
-      api.assetLegacy.destroy(key, onDestroy);
+    function destroy() {
+      gutil.log(gutil.colors.blue('Trying to destroy: ' + filepath));
+      if (themeId) {
+        api.asset.destroy(themeId, key, onDestroy);
+      } else {
+        api.assetLegacy.destroy(key, onDestroy);
+      }
     }
+
+    destroy();
 };
+
 
 // plugin level function (dealing with files)
 function gulpShopifyUpload(apiKey, password, host, themeid, options) {
@@ -218,16 +235,18 @@ function gulpShopifyUpload(apiKey, password, host, themeid, options) {
     }
 
     if (file.isBuffer()) {
-      shopify.upload(file.path, file, host, '', themeid);
+      shopify.upload(file.path, file, host, '', themeid, cb);
     } else if (file.isNull()) {
-      shopify.destroy(file.path, file, host, '', themeid);
+      shopify.destroy(file.path, file, host, '', themeid, cb);
+    } else {
+      gutil.log(gutil.colors.red('This should not happened! ' + file.path));
     }
 
     // make sure the file goes through the next gulp plugin
     this.push(file);
 
     // tell the stream engine that we are done with this file
-    cb();
+    // cb();
   });
 
   // returning the file stream
