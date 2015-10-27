@@ -1,6 +1,6 @@
 {
   "name": "gulp-shopify-upload",
-  "version": "1.1.3",
+  "version": "2.0.0",
   "description": "A tool to watch and upload files to Shopify for use in theme editing",
   "keywords": [
     "gulp",
