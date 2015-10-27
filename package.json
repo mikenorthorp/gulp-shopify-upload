@@ -22,6 +22,11 @@
       "name": "Mike Northorp",
       "email": "mike.northorp@gmail.com",
       "url": "https://github.com/mikenorthorp"
+    },
+    {
+      "name": "Roy Martin",
+      "email": "roy@roy-martin.com",
+      "url": "https://github.com/rmartin"
     }
   ],
   "main": "index.js",
@@ -30,7 +35,6 @@
     "url": "git://github.com/mikenorthorp/gulp-shopify-upload.git"
   },
   "dependencies": {
-    "async": "0.2.9",
     "isbinaryfile": "2.0.0",
     "path": "0.11.14",
     "shopify-api": "0.2.2",
