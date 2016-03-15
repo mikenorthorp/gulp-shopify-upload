@@ -1,4 +1,4 @@
-gulp-shopify-upload
+gulp-shopify-upload-with-callbacks
 ===================
 
 ## Introduction
