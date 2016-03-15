@@ -1,21 +1,20 @@
 {
-  "name": "gulp-shopify-upload",
-  "version": "2.0.0",
+  "name": "gulp-shopify-upload-with-callbacks",
+  "version": "2.0.1",
   "description": "A tool to watch and upload files to Shopify for use in theme editing",
   "keywords": [
     "gulp",
     "shopify",
     "shopify-upload",
-    "shopify-theme",
-    "ablesense"
+    "shopify-theme"
   ],
-  "homepage": "https://github.com/mikenorthorp/gulp-shopify-upload",
+  "homepage": "https://github.com/Tshamz/gulp-shopify-upload-with-callbacks",
   "bugs": {
-    "url": "https://github.com/mikenorthorp/gulp-shopify-upload/issues"
+    "url": "https://github.com/Tshamz/gulp-shopify-upload-with-callbacks/issues"
   },
   "author": {
-    "name": "Able Sense Media",
-    "url": "http://ablesense.com"
+    "name": "BVAccel",
+    "url": "http://bvaccel.com"
   },
   "contributors": [
     {
@@ -24,15 +23,15 @@
       "url": "https://github.com/mikenorthorp"
     },
     {
-      "name": "Roy Martin",
-      "email": "roy@roy-martin.com",
-      "url": "https://github.com/rmartin"
+      "name": "Tyler Shambora",
+      "email": "tyler@bvaccel.com",
+      "url": "https://github.com/tshamz"
     }
   ],
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mikenorthorp/gulp-shopify-upload.git"
+    "url": "https://github.com/Tshamz/gulp-shopify-upload-with-callbacks.git"
   },
   "dependencies": {
     "isbinaryfile": "2.0.0",
@@ -55,8 +54,8 @@
   ],
   "maintainers": [
     {
-      "name": "mikenorthorp",
-      "email": "mike.northorp@gmail.com"
+      "name": "tshamz",
+      "email": "tyler@bvaccel.com"
     }
   ],
   "scripts": {}
