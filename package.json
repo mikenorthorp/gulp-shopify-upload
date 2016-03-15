@@ -12,26 +12,15 @@
   "bugs": {
     "url": "https://github.com/Tshamz/gulp-shopify-upload-with-callbacks/issues"
   },
-  "author": {
-    "name": "BVAccel",
-    "url": "http://bvaccel.com"
-  },
+  "author": "BVAccel (http://bvaccel.com)",
   "contributors": [
-    {
-      "name": "Mike Northorp",
-      "email": "mike.northorp@gmail.com",
-      "url": "https://github.com/mikenorthorp"
-    },
-    {
-      "name": "Tyler Shambora",
-      "email": "tyler@bvaccel.com",
-      "url": "https://github.com/tshamz"
-    }
+    "Mike Northorp <mike.northorp@gmail.com> (https://github.com/mikenorthorp)",
+    "Tyler Shambora <tyler@bvaccel.com> (https://github.com/tshamz)"
   ],
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Tshamz/gulp-shopify-upload-with-callbacks.git"
+    "url": "git+https://github.com/Tshamz/gulp-shopify-upload-with-callbacks.git"
   },
   "dependencies": {
     "isbinaryfile": "2.0.0",
@@ -53,10 +42,8 @@
     }
   ],
   "maintainers": [
-    {
-      "name": "tshamz",
-      "email": "tyler@bvaccel.com"
-    }
+    "tshamz <tyler@bvaccel.com>"
   ],
-  "scripts": {}
+  "scripts": {},
+  "license": "ISC"
 }
