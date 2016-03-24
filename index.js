@@ -1,11 +1,11 @@
 'use strict';
 var through = require('through2');
 var gutil = require('gulp-util');
-var inquirer = require("inquirer");
+var inquirer = require('inquirer');
 var path = require('path');
+var opn = require('open');
 var isBinaryFile = require('isbinaryfile');
 var ShopifyApi = require('shopify-api');
-var opn = require('gulp-open');
 var PluginError = gutil.PluginError;
 var shopify = {};
 var shopifyAPI;
@@ -149,12 +149,12 @@ shopify.upload = function (filepath, file, host, base, themeid, cb) {
   gutil.log(gutil.colors.gray.dim('Uploading: ' + filepath));
   function onUpdate(err, resp) {
     if (err && err.type === 'ShopifyInvalidRequestError') {
-      gutil.log(gutil.colors.red('Error uploading file ' + filepath ));
+      gutil.log(gutil.colors.red('Error uploading file ' + filepath));
     } else if (!err) {
       var filename = filepath.replace(/^.*[\\\/]/, '');
       gutil.log(gutil.colors.green('Upload Complete: ' + filename));
     } else {
-      gutil.log(gutil.colors.red('Error undefined! ' + err.type + ' ' + err.detail ));
+      gutil.log(gutil.colors.red('Error undefined! ' + err.type + ' ' + err.detail));
     }
     cb();
   }
@@ -187,7 +187,7 @@ shopify.destroy = function (filepath, file, host, base, themeid, cb) {
 
   function onDestroy(err, resp) {
     if (err && err.type === 'ShopifyInvalidRequestError') {
-      gutil.log(gutil.colors.red('Error removing file: ' + filepath ));
+      gutil.log(gutil.colors.red('Error removing file: ' + filepath));
     } else if (!err) {
       var filename = filepath.replace(/^.*[\\\/]/, '');
       gutil.log(gutil.colors.green('File removed: ' + filename));
@@ -219,7 +219,7 @@ shopify.destroy = function (filepath, file, host, base, themeid, cb) {
  * @param {themeid} string - unique id upload to the Shopify theme
  * @param {options} object - named array of custom overrides.
  */
-function gulpShopifyUpload(apiKey, password, host, themeid, options, themeName) {
+function gulpShopifyUpload(apiKey, password, host, themeid, options) {
 
   // queue files provided in the stream for deployment
   var apiBurstBucketSize = 36;
@@ -240,61 +240,61 @@ function gulpShopifyUpload(apiKey, password, host, themeid, options, themeName) 
     throw new PluginError(PLUGIN_NAME, 'Error, host for shopify does not exist!');
   }
 
-  var themes = [];
 
-  // List available themes if options.listThemes is true
-  if (options.listThemes) {
-    shopifyAPI.theme.list(function(err, obj) {
-      if (err || !obj.themes ) {
-        gutil.log(gutil.colors.red( err ));
-        return;
-      } else {
+  shopifyAPI.theme.list(function(err, obj) {
+    if (err || !obj.themes) {
+      gutil.log(gutil.colors.red(err));
+      return;
+    } else {
+      if (typeof(themeid) !== 'number') {
         // We have multiple themes, lets list them for easy reference to the themeid
         // without having to look in the admin
+        var themes = [];
         obj.themes.forEach(function(theme) {
           var t = theme.id + ' - ' + theme.name;
           if (theme.role.length > 0) {
             t += ' (' + theme.role + ')';
           }
           themes.push(t);
-          // gutil.log( 'Available theme: ' + gutil.colors.magenta( t ));
-          // if ( theme.id == themeid ){
-          //   gutil.log( gutil.colors.green('Connected to ') + gutil.colors.magenta(host) + gutil.colors.green(' theme: ') + gutil.colors.magenta( t ));
-          // }
         });
+        inquirer.prompt([
+          {
+            type: 'list',
+            name: 'theme',
+            default: null,
+            message: 'which theme would you like to use?',
+            choices: themes,
+            filter: function(val) {
+              var fullName = val.match(/(\d+) - (.*)/);
+              return {
+                id: fullName[1],
+                name: fullName[2]
+              };
+            }
+          }
+        ], function(answers) {
+          themeid = answers.theme.id;
+          gutil.log(gutil.colors.gray('Connected to: ') + gutil.colors.magenta(host) + gutil.colors.gray(' theme id: ') + gutil.colors.magenta(answers.theme.id) + gutil.colors.gray(' theme name: ') + gutil.colors.magenta(answers.theme.name));
+          opn(''host+'?preview_theme_id='+themeid);
+        });
+      } else {
+        var themeidValid = false;
+        var themeName;
+        obj.themes.forEach(function(theme) {
+          if (theme.id == themeid) {
+            themeidValid = true;
+            themeName = theme.name;
+          }
+        });
+        if (themeidValid) {
+          gutil.log(gutil.colors.gray('Connected to: ') + gutil.colors.magenta(host) + gutil.colors.gray(' theme id: ') + gutil.colors.magenta(themeid) + gutil.colors.gray(' theme name: ') + gutil.colors.magenta(themeName));
+        } else {
+          throw new PluginError(PLUGIN_NAME, 'Error, please make sure you\'re publishing to a real theme id');
+        }
       }
-    });
-  } else {
-    // If the listThemes option isnt set or is false, still show theme ID if we can
-    if (themeid) {
-      gutil.log('Connected to ' + gutil.colors.magenta(host) + ' theme: ' + gutil.colors.magenta(themeid));
-    } else {
-      gutil.log('Connected to ' + gutil.colors.magenta(host));
     }
-  }
-
-  inquirer.prompt([
-    {
-      type: 'list',
-      name: 'theme',
-      message: 'which theme would you like to use?',
-      choices: themes
-    }
-  ], function( answers ) {
-    console.log( JSON.stringify(answers, null, '  ') );
   });
 
-
-  // gulp.src('').pipe(open({uri: envUrl}));
-
-  // gutil.log(
-  //   '\n' +
-  //   '\n' + gutil.colors.dim.underline('Ready to upload to...                   ') +
-  //   '\n' + gutil.colors.dim('Environment Name: ') + '  ' + gutil.colors.bold.green(themeName) +
-  //   '\n' + gutil.colors.dim('Store URL: ') + '         ' + gutil.colors.bold.green(host) +
-  //   '\n' + gutil.colors.dim('Theme ID: ') + '          ' + gutil.colors.bold.green(themeid) +
-  //   '\n'
-  // );
 
   // creating a stream through which each file will pass
   stream = through.obj(function (file, enc, cb) {
