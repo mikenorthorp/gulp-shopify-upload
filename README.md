@@ -1,12 +1,11 @@
-gulp-shopify-upload
+gulp-shopify-upload-with-callbacks
 ===================
 
 ## Introduction
 
-**gulp-shopify-upload** is a [Gulpjs](https://github.com/gulpjs/gulp) plugin used to watch and upload theme files to Shopify.
-By using this plugin you can watch and deploy all of the different folders in a Shopify theme and have them automatically deploy to your Shopify store. This is more lightweight than using Shopifys inline theme editor or desktop theme editor, and works on all platforms that support Node (Windows, Mac and Linux).
+**gulp-shopify-upload-with-callbacks** is a [Gulpjs](https://github.com/gulpjs/gulp) plugin forked from https://github.com/mikenorthorp/gulp-shopify-upload and then augmented to allow for callbacks after a file has been uploaded.
 
-This is a port of a similar plugin using Grunt called [grunt-shopify](https://github.com/wilr/grunt-shopify), thank you to the author for making a great plugin for Shopify.
+That project was a port of a similar plugin using Grunt called [grunt-shopify](https://github.com/wilr/grunt-shopify), thank you to the author for making a great plugin for Shopify.
 
 ## Features
 
