@@ -1,6 +1,6 @@
 {
   "name": "gulp-shopify-upload-with-callbacks",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A tool to watch and upload files to Shopify for use in theme editing",
   "keywords": [
     "gulp",
@@ -12,10 +12,21 @@
   "bugs": {
     "url": "https://github.com/Tshamz/gulp-shopify-upload-with-callbacks/issues"
   },
-  "author": "BVAccel (http://bvaccel.com)",
+  "author": {
+    "name": "BVAccel",
+    "url": "http://bvaccel.com"
+  },
   "contributors": [
-    "Mike Northorp <mike.northorp@gmail.com> (https://github.com/mikenorthorp)",
-    "Tyler Shambora <tyler@bvaccel.com> (https://github.com/tshamz)"
+    {
+      "name": "Mike Northorp",
+      "email": "mike.northorp@gmail.com",
+      "url": "https://github.com/mikenorthorp"
+    },
+    {
+      "name": "Tyler Shambora",
+      "email": "tyler@bvaccel.com",
+      "url": "https://github.com/tshamz"
+    }
   ],
   "main": "index.js",
   "repository": {
@@ -27,7 +38,8 @@
     "path": "0.11.14",
     "shopify-api": "0.2.2",
     "through2": "0.6.3",
-    "gulp-util": "3.0.2"
+    "gulp-util": "3.0.2",
+    "inquirer": "0.12.0"
   },
   "devDependencies": {
     "gulp": "3.8.10"
@@ -42,8 +54,17 @@
     }
   ],
   "maintainers": [
-    "tshamz <tyler@bvaccel.com>"
+    {
+      "name": "tshamz",
+      "email": "tyler@bvaccel.com"
+    }
   ],
   "scripts": {},
-  "license": "ISC"
+  "license": "ISC",
+  "readme": "gulp-shopify-upload-with-callbacks\n===================\n\n## Introduction\n\n**gulp-shopify-upload-with-callbacks** is a [Gulpjs](https://github.com/gulpjs/gulp) plugin forked from https://github.com/mikenorthorp/gulp-shopify-upload and then augmented to allow for callbacks after a file has been uploaded.\n\nThat project was a port of a similar plugin using Grunt called [grunt-shopify](https://github.com/wilr/grunt-shopify), thank you to the author for making a great plugin for Shopify.\n\n## Features\n\n- Uploads any file changes to Shopify in the folders:  `assets, layout, config, snippets, templates, locales`.\n- Automatically uploads changes to the current working theme in Shopify unless a themeid is specified.\n- Supports incremental file changes as well as a full site deploy for continuous integration.\n- Lightweight and fast, changes are uploaded instantly.\n\n## Basic Usage\n\n1. Download whatever theme you are working on from Shopify to a local directory\n2. Create a [private app](http://docs.shopify.com/api/authentication/creating-a-private-app) in Shopify and get the API Key and Password for it.\n3. Your folder structure and gulpfile.js should have look something like below\n```\nshopifyTheme/\n|-- gulpfile.js\n|-- assets/\n|-- config/\n|-- layout/\n|-- locales/\n|-- snippets/\n|-- templates/\n```\n\n**Example Gulpfile**\n```\n// Gulp plugin setup\nvar gulp = require('gulp');\n// Watches single files\nvar watch = require('gulp-watch');\nvar gulpShopify = require('gulp-shopify-upload');\n\ngulp.task('shopifywatch', function() {\n  return watch('./+(assets|layout|config|snippets|templates|locales)/**')\n.pipe(gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID'));\n});\n\n// Default gulp action when gulp is run\ngulp.task('default', [\n  'shopifywatch'\n]);\n```\n4. The basic function call looks like\n```\ngulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID')\n```\n\t- `API KEY` is the API Key generated when creating a private app in Shopify\n\t- `PASSWORD` is the Password generated when creating a private app in Shopify\n\t- `MYSITE.myshopify.com` is the URL of your shop\n\t- `THEME ID` is the ID of your theme and is **OPTIONAL**, if not passed in, the current working theme will be used\n4. Run `npm install gulp gulp-watch gulp-shopify-upload`\n5. Run `gulp` and edit one of your theme files, it should automatically be uploaded to Shopify\n\n## Advanced Usage\n**Customize Your Base Deployment Path**\nIf your project structure is different (perhaps you use Gulpjs to compile your theme to another directory), you can change the directory from which the plugin picks up files.\nTo do so, simply provide an additional options hash to function call, with a `basePath` property.\n\n```\nvar options = {\n  \"basePath\": \"some/other-directory/\"\n};\n\n// With a theme id\ngulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID', options)\n\n// Without a theme id\ngulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', null, options)\n```\n\n**Deploy the Entire Site**\nYou can also deploy the entire site for use with continuous integration.\n```\ngulp.task('deploy', ['build'], function() {\n  return gulp.src('./+(assets|layout|config|snippets|templates|locales)/**')\n    .pipe(gulpShopify('API KEY', 'PASSWORD', 'MYSITE.myshopify.com', 'THEME ID'));\n;\n});\n```\n\n*Created by [Able Sense Media](http://ablesense.com) - 2015*\n",
+  "readmeFilename": "README.md",
+  "gitHead": "d83e7c595bb2486ab3cfb78b10c390de3b8b9cd5",
+  "_id": "gulp-shopify-upload-with-callbacks@2.0.1",
+  "_shasum": "e16e562f73d31851c6786088931c9dc8e385cd35",
+  "_from": "gulp-shopify-upload-with-callbacks@>=2.0.1 <3.0.0"
 }
