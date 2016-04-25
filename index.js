@@ -152,7 +152,7 @@ shopify.upload = function (filepath, file, host, base, themeid) {
     }
   }
 
-  if (themeId == "__production__") {
+  if (themeId === "__production__") {
     api.assetLegacy.update(props, onUpdate);
   } else if (themeId) {
     api.asset.update(themeId, props, onUpdate);
