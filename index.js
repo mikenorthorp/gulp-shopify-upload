@@ -152,10 +152,12 @@ shopify.upload = function (filepath, file, host, base, themeid) {
     }
   }
 
-  if (themeId) {
+  if (themeId === "__production__") {
+    api.assetLegacy.update(props, onUpdate);
+  } else if (themeId) {
     api.asset.update(themeId, props, onUpdate);
   } else {
-    api.assetLegacy.update(props, onUpdate);
+    gutil.log(gutil.colors.red('Error theme ID not set! Please set your theme ID or use "__production__" to default to the current working theme'));
   }
 };
 
