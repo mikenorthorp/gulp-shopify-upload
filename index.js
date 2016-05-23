@@ -5,7 +5,7 @@ var through = require('through2'),
   isBinaryFile = require('isbinaryfile'),
   ShopifyApi = require('shopify-api'),
   PluginError = gutil.PluginError,
-  Notification = require('node-notifier').NotificationCenter;
+  Notification = require('node-notifier').NotificationCenter,
   shopify = {},
   shopifyAPI,
   PLUGIN_NAME = 'gulp-shopify-upload',
