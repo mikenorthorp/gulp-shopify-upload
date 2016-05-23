@@ -148,6 +148,7 @@ shopify.upload = function(filepath, file, host, base, themeid) {
 
   function onUpdate(err, resp) {
     if (err && err.type === 'ShopifyInvalidRequestError') {
+      var errMsg = err.detail.asset[0].split('\n')[0];
       gutil.log(gutil.colors.red('ERROR: "' + errMsg + '" in ' + key));
       notifier.notify({
         title:  "Upload Failed",
