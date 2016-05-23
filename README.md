@@ -88,4 +88,3 @@ gulp.task('deploy', ['build'], function() {
 ```
 
 *Created by [Able Sense Media](http://ablesense.com) - 2015*
-*Modified by [Chris Wu](http://github.com/amouro)*
