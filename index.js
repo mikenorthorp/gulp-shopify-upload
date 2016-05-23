@@ -5,9 +5,14 @@ var through = require('through2'),
   isBinaryFile = require('isbinaryfile'),
   ShopifyApi = require('shopify-api'),
   PluginError = gutil.PluginError,
+  Notification = require('node-notifier').NotificationCenter,
   shopify = {},
   shopifyAPI,
-  PLUGIN_NAME = 'gulp-shopify-upload';
+  PLUGIN_NAME = 'gulp-shopify-upload',
+  notifier = new Notification({
+    withFallback: false, // use Growl if <= 10.8?
+    customPath: void 0 // Relative path if you want to use your fork of terminal-notifier
+  });
 
 // Set up shopify API information
 shopify._api = false;
@@ -120,7 +125,7 @@ shopify._setOptions = function (options) {
  * @param {string} filepath
  * @param {Function} done
  */
-shopify.upload = function (filepath, file, host, base, themeid) {
+shopify.upload = function(filepath, file, host, base, themeid) {
 
   var api = shopifyAPI,
     themeId = themeid,
@@ -143,12 +148,32 @@ shopify.upload = function (filepath, file, host, base, themeid) {
 
   function onUpdate(err, resp) {
     if (err && err.type === 'ShopifyInvalidRequestError') {
-      gutil.log(gutil.colors.red('Error invalid upload request! ' + filepath + ' not uploaded to ' + host));
+      var errMsg = err.detail.asset[0].split('\n')[0];
+      gutil.log(gutil.colors.red('ERROR: "' + errMsg + '" in ' + key));
+      notifier.notify({
+        title:  "Upload Failed",
+        message:  err.detail.asset[0],
+        icon: __dirname + '/shopify-logo.png',
+        sound:  "Sosumi"
+      });
     } else if (!err) {
       var filename = filepath.replace(/^.*[\\\/]/, '');
       gutil.log(gutil.colors.green('Upload Complete: ' + filename));
+      notifier.notify({
+        title:  "Upload Complete",
+        message: key,
+        icon: __dirname + '/shopify-logo.png',
+        sound:  "Pop"
+      });
     } else {
       gutil.log(gutil.colors.red('Error undefined! ' + err.type));
+      notifier.notify({
+        title:  "Gulp Shopify Upload",
+        subtitle: "Unknown Error",
+        message:  err,
+        icon: __dirname + '/shopify-logo.png',
+        sound:  "Blow"
+      });
     }
   }
 
