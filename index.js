@@ -174,10 +174,9 @@ shopify.upload = function (file, host, base, themeid, callback) {
  * @param {options} object - named array of custom overrides.
  */
 function gulpShopifyUpload(apiKey, password, host, themeid, options) {
-
   // queue files provided in the stream for deployment
   var stream;
-
+  var delay = (options && options.delay) ? options.delay : 1000
   // Set up the API
   shopify._setOptions(options);
   shopifyAPI = shopify._getApi(apiKey, password, host);
@@ -206,7 +205,7 @@ function gulpShopifyUpload(apiKey, password, host, themeid, options) {
     }
     if (file.isBuffer()) {
       function upload(){
-        return Promise.delay(1000)
+        return Promise.delay(delay)
         .then(function(){
           return new Promise(function(resolve, reject){
             var callback = function(err){
