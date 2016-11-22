@@ -5,6 +5,7 @@ var through = require('through2'),
   isBinaryFile = require('isbinaryfile'),
   ShopifyApi = require('shopify-api'),
   PluginError = gutil.PluginError,
+  Promise = require('bluebird'),
   shopify = {},
   shopifyAPI,
   PLUGIN_NAME = 'gulp-shopify-upload';
@@ -116,13 +117,11 @@ shopify._setOptions = function (options) {
  *      - General assets => 'assets/'
  *      - Language files => 'locales/'
  *
- * Some requests may fail if those folders are ignored
- * @param {string} filepath
- * @param {Function} done
  */
-shopify.upload = function (filepath, file, host, base, themeid) {
+shopify.upload = function (file, host, base, themeid, callback) {
 
-  var api = shopifyAPI,
+  var filepath = file.path,
+    api = shopifyAPI,
     themeId = themeid,
     key = shopify._makeAssetKey(filepath, base),
     isBinary = isBinaryFile(filepath),
@@ -131,7 +130,8 @@ shopify.upload = function (filepath, file, host, base, themeid) {
         key: key
       }
     },
-    contents;
+    contents,
+    filename = filepath.replace(/^.*[\\\/]/, '');;
 
   contents = file.contents;
 
@@ -145,18 +145,18 @@ shopify.upload = function (filepath, file, host, base, themeid) {
     if (err && err.type === 'ShopifyInvalidRequestError') {
       gutil.log(gutil.colors.red('Error invalid upload request! ' + filepath + ' not uploaded to ' + host));
     } else if (!err) {
-      var filename = filepath.replace(/^.*[\\\/]/, '');
       gutil.log(gutil.colors.green('Upload Complete: ' + filename));
+      callback();
     } else {
-      gutil.log(gutil.colors.red('Error undefined! ' + err.type));
+      gutil.log(gutil.colors.red('Error ' + err.type));
+      callback(err);
     }
   }
 
-  if (themeId) {
-    api.asset.update(themeId, props, onUpdate);
-  } else {
-    api.assetLegacy.update(props, onUpdate);
-  }
+  gutil.log(gutil.colors.yellow('Trying to upload: ' + filename));
+
+  api.asset.update(themeId, props, onUpdate);
+
 };
 
 /*
@@ -176,9 +176,7 @@ shopify.upload = function (filepath, file, host, base, themeid) {
 function gulpShopifyUpload(apiKey, password, host, themeid, options) {
 
   // queue files provided in the stream for deployment
-  var apiBurstBucketSize = 40,
-    uploadedFileCount = 0,
-    stream;
+  var stream;
 
   // Set up the API
   shopify._setOptions(options);
@@ -195,31 +193,41 @@ function gulpShopifyUpload(apiKey, password, host, themeid, options) {
   if (typeof host === 'undefined') {
     throw new PluginError(PLUGIN_NAME, 'Error, host for shopify does not exist!');
   }
+  if (typeof themeid === 'undefined') {
+    throw new PluginError(PLUGIN_NAME, 'Error, themeid for shopify does not exist!');
+  }
 
   // creating a stream through which each file will pass
   stream = through.obj(function (file, enc, cb) {
+    var _this = this;
     if (file.isStream()) {
       this.emit('error', new PluginError(PLUGIN_NAME, 'Streams are not supported!'));
       return cb();
     }
-
     if (file.isBuffer()) {
-      // deploy immediately if within the burst bucket size, otherwise queue
-      if (uploadedFileCount <= apiBurstBucketSize) {
-        shopify.upload(file.path, file, host, '', themeid);
-      } else {
-        // Delay deployment based on position in the array to deploy 2 files per second
-        // after hitting the initial burst bucket limit size
-        setTimeout(shopify.upload.bind(null, file.path, file, host, '', themeid), ((uploadedFileCount - apiBurstBucketSize) / 2) * 1000);
+      function upload(){
+        return Promise.delay(1000)
+        .then(function(){
+          return new Promise(function(resolve, reject){
+            var callback = function(err){
+              if(err){
+                reject(err)
+              } else {
+                resolve()
+              }
+            }
+            shopify.upload(file, host, '', themeid, callback);
+          })
+        })
+        .then(function(){
+          _this.push(file);
+          cb();
+        }, function(error){
+          upload()
+        })
       }
-      uploadedFileCount++;
+      return upload()
     }
-
-    // make sure the file goes through the next gulp plugin
-    this.push(file);
-
-    // tell the stream engine that we are done with this file
-    cb();
   });
 
   // returning the file stream
