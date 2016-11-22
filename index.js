@@ -119,7 +119,6 @@ shopify._setOptions = function (options) {
  *
  */
 shopify.upload = function (file, host, base, themeid, callback) {
-
   var filepath = file.path,
     api = shopifyAPI,
     themeId = themeid,
@@ -226,6 +225,9 @@ function gulpShopifyUpload(apiKey, password, host, themeid, options) {
         })
       }
       return upload()
+    } else {
+      _this.push(file);
+      cb();
     }
   });
 
