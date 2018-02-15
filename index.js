@@ -146,6 +146,7 @@ shopify.upload = function (file, host, base, themeid, callback) {
     if(!err){
       var filename = filepath.replace(/^.*[\\\/]/, '');
       gutil.log(gutil.colors.green('Upload Complete: ' + filename));
+      callback();
       return;
     }
 
@@ -170,6 +171,7 @@ shopify.upload = function (file, host, base, themeid, callback) {
     }
 
     gutil.log(gutil.colors.red(errorMsg));
+    callback(err);
   }
 
   gutil.log(gutil.colors.yellow('Trying to upload: ' + filename));
