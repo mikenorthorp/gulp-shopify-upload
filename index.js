@@ -141,15 +141,35 @@ shopify.upload = function (file, host, base, themeid, callback) {
   }
 
   function onUpdate(err, resp) {
-    if (err && err.type === 'ShopifyInvalidRequestError') {
-      gutil.log(gutil.colors.red('Error invalid upload request! ' + filepath + ' not uploaded to ' + host));
-    } else if (!err) {
+    
+    /* If there's no error, then everything is OK, just print OK message and return */
+    if(!err){
+      var filename = filepath.replace(/^.*[\\\/]/, '');
       gutil.log(gutil.colors.green('Upload Complete: ' + filename));
-      callback();
-    } else {
-      gutil.log(gutil.colors.red('Error ' + err.type));
-      callback(err);
+      return;
     }
+
+    /* If an error occurred, elaborate on the error based on its type */
+
+    var errorMsg;
+
+    switch(err.type){
+      case 'ShopifyInvalidRequestError': {
+        errorMsg = 'Error invalid upload request! ' + filepath + ' not uploaded to ' + host;
+        break;
+      }
+      default: {
+        errorMsg = 'Error undefined! ' + err.type;
+        break;
+      }
+    }
+
+    /* In any case, if detail is provided, add it! */
+    if(err.detail){
+      errorMsg += '\nError Detail:\n' + JSON.stringify(err.detail, null, 2);
+    }
+
+    gutil.log(gutil.colors.red(errorMsg));
   }
 
   gutil.log(gutil.colors.yellow('Trying to upload: ' + filename));
