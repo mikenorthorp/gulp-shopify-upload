@@ -5,6 +5,7 @@ var through = require('through2'),
   isBinaryFile = require('isbinaryfile'),
   ShopifyApi = require('shopify-api'),
   PluginError = gutil.PluginError,
+  Promise = require('bluebird'),
   shopify = {},
   shopifyAPI,
   PLUGIN_NAME = 'gulp-shopify-upload';
@@ -116,13 +117,10 @@ shopify._setOptions = function (options) {
  *      - General assets => 'assets/'
  *      - Language files => 'locales/'
  *
- * Some requests may fail if those folders are ignored
- * @param {string} filepath
- * @param {Function} done
  */
-shopify.upload = function (filepath, file, host, base, themeid) {
-
-  var api = shopifyAPI,
+shopify.upload = function (file, host, base, themeid, callback) {
+  var filepath = file.path,
+    api = shopifyAPI,
     themeId = themeid,
     key = shopify._makeAssetKey(filepath, base),
     isBinary = isBinaryFile(filepath),
@@ -131,7 +129,8 @@ shopify.upload = function (filepath, file, host, base, themeid) {
         key: key
       }
     },
-    contents;
+    contents,
+    filename = filepath.replace(/^.*[\\\/]/, '');;
 
   contents = file.contents;
 
@@ -142,21 +141,43 @@ shopify.upload = function (filepath, file, host, base, themeid) {
   }
 
   function onUpdate(err, resp) {
-    if (err && err.type === 'ShopifyInvalidRequestError') {
-      gutil.log(gutil.colors.red('Error invalid upload request! ' + filepath + ' not uploaded to ' + host));
-    } else if (!err) {
+    
+    /* If there's no error, then everything is OK, just print OK message and return */
+    if(!err){
       var filename = filepath.replace(/^.*[\\\/]/, '');
       gutil.log(gutil.colors.green('Upload Complete: ' + filename));
-    } else {
-      gutil.log(gutil.colors.red('Error undefined! ' + err.type));
+      callback();
+      return;
     }
+
+    /* If an error occurred, elaborate on the error based on its type */
+
+    var errorMsg;
+
+    switch(err.type){
+      case 'ShopifyInvalidRequestError': {
+        errorMsg = 'Error invalid upload request! ' + filepath + ' not uploaded to ' + host;
+        break;
+      }
+      default: {
+        errorMsg = 'Error undefined! ' + err.type;
+        break;
+      }
+    }
+
+    /* In any case, if detail is provided, add it! */
+    if(err.detail){
+      errorMsg += '\nError Detail:\n' + JSON.stringify(err.detail, null, 2);
+    }
+
+    gutil.log(gutil.colors.red(errorMsg));
+    callback(err);
   }
 
-  if (themeId) {
-    api.asset.update(themeId, props, onUpdate);
-  } else {
-    api.assetLegacy.update(props, onUpdate);
-  }
+  gutil.log(gutil.colors.yellow('Trying to upload: ' + filename));
+
+  api.asset.update(themeId, props, onUpdate);
+
 };
 
 /*
@@ -174,12 +195,9 @@ shopify.upload = function (filepath, file, host, base, themeid) {
  * @param {options} object - named array of custom overrides.
  */
 function gulpShopifyUpload(apiKey, password, host, themeid, options) {
-
   // queue files provided in the stream for deployment
-  var apiBurstBucketSize = 40,
-    uploadedFileCount = 0,
-    stream;
-
+  var stream;
+  var delay = (options && options.delay) ? options.delay : 1000
   // Set up the API
   shopify._setOptions(options);
   shopifyAPI = shopify._getApi(apiKey, password, host);
@@ -195,31 +213,44 @@ function gulpShopifyUpload(apiKey, password, host, themeid, options) {
   if (typeof host === 'undefined') {
     throw new PluginError(PLUGIN_NAME, 'Error, host for shopify does not exist!');
   }
+  if (typeof themeid === 'undefined') {
+    throw new PluginError(PLUGIN_NAME, 'Error, themeid for shopify does not exist!');
+  }
 
   // creating a stream through which each file will pass
   stream = through.obj(function (file, enc, cb) {
+    var _this = this;
     if (file.isStream()) {
       this.emit('error', new PluginError(PLUGIN_NAME, 'Streams are not supported!'));
       return cb();
     }
-
     if (file.isBuffer()) {
-      // deploy immediately if within the burst bucket size, otherwise queue
-      if (uploadedFileCount <= apiBurstBucketSize) {
-        shopify.upload(file.path, file, host, '', themeid);
-      } else {
-        // Delay deployment based on position in the array to deploy 2 files per second
-        // after hitting the initial burst bucket limit size
-        setTimeout(shopify.upload.bind(null, file.path, file, host, '', themeid), ((uploadedFileCount - apiBurstBucketSize) / 2) * 1000);
+      function upload(){
+        return Promise.delay(delay)
+        .then(function(){
+          return new Promise(function(resolve, reject){
+            var callback = function(err){
+              if(err){
+                reject(err)
+              } else {
+                resolve()
+              }
+            }
+            shopify.upload(file, host, '', themeid, callback);
+          })
+        })
+        .then(function(){
+          _this.push(file);
+          cb();
+        }, function(error){
+          upload()
+        })
       }
-      uploadedFileCount++;
+      return upload()
+    } else {
+      _this.push(file);
+      cb();
     }
-
-    // make sure the file goes through the next gulp plugin
-    this.push(file);
-
-    // tell the stream engine that we are done with this file
-    cb();
   });
 
   // returning the file stream
